@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tweetinvi;
 using System.Net;
 using System.IO;
@@ -14,19 +11,34 @@ namespace IstHaltKeinBot
     {
         static void Main(string[] args)
         {
-            
-            Uri uri = new Uri(@"http://api.steampowered.com/ISteamApps/GetAppList/v0002/");
-            WebRequest webRequest = WebRequest.Create(uri);
-            WebResponse response = webRequest.GetResponse();
-            StreamReader streamReader = new StreamReader(response.GetResponseStream());
-            String responseData = streamReader.ReadToEnd();
-            var outObject = JsonConvert.DeserializeObject<RootObject>(responseData);
+            String jsonfile = "steam.json";
 
-            int appNumber = outObject.applist.apps.Count;
+            //If the json file is nonexistend or older than 7 days, it should be downloaded
+            var threshold = DateTime.Now.AddDays(-7);
+            var fileage = System.IO.File.GetLastWriteTime(jsonfile); //Age of the json file
+            if (!File.Exists(jsonfile) || fileage  < threshold){
+                //Downloads the latest json file of all games that exist on steam.
+                WebClient myWebClient = new WebClient();
+                myWebClient.DownloadFile("http://api.steampowered.com/ISteamApps/GetAppList/v0002/", jsonfile);
+            }
+
+            //Reads the data from the steam.json
+            StreamReader sr = new StreamReader(jsonfile);
+            String jsonData = sr.ReadToEnd();
+            var outObject = JsonConvert.DeserializeObject<RootObject>(jsonData);    //Serializes the JSon String
+            sr.Close();
+
+
+
+            //Generates random numbers
+            int appNumber = outObject.applist.apps.Count;   //How many Steam-Apps?
             Random Rnd = new Random();
-            int random1 = Rnd.Next(appNumber);
-            int random2 = Rnd.Next(appNumber);
+            int random1 = Rnd.Next(appNumber);  //First game
+            int random2 = Rnd.Next(appNumber);  //Second game
 
+            Console.WriteLine(outObject.applist.apps[random1].name + " ist halt kein " + outObject.applist.apps[random2].name);
+
+            //Writes a new tweet
             Auth.SetUserCredentials("CONSUMER_KEY", "CONSUMER_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
             Tweet.PublishTweet(outObject.applist.apps[random1].name + " ist halt kein " + outObject.applist.apps[random2].name);
         }
