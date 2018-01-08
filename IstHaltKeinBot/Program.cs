@@ -36,11 +36,9 @@ namespace IstHaltKeinBot
             int random1 = Rnd.Next(appNumber);  //First game
             int random2 = Rnd.Next(appNumber);  //Second game
 
-            Console.WriteLine(outObject.applist.apps[random1].name + " ist halt kein " + outObject.applist.apps[random2].name);
-
             //Writes a new tweet
             Auth.SetUserCredentials("CONSUMER_KEY", "CONSUMER_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
-            Tweet.PublishTweet(outObject.applist.apps[random1].name + " ist halt kein " + outObject.applist.apps[random2].name);
+            Tweet.PublishTweet(outObject.applist.apps[random1].name + " ist halt kein " + outObject.applist.apps[random2].name + ".");
         }
     }
 
