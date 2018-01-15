@@ -4,8 +4,6 @@ using Tweetinvi;
 using System.Net;
 using System.IO;
 using Newtonsoft.Json;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace IstHaltKeinBot
 {
@@ -30,30 +28,17 @@ namespace IstHaltKeinBot
             var outObject = JsonConvert.DeserializeObject<RootObject>(jsonData);    //Serializes the JSon String
             sr.Close();
 
-            //RNG generator - Is declared here, because if it is declared in generateRandomGame it does not work correctly...
+
+
+            //Generates random numbers
+            int appNumber = outObject.applist.apps.Count;   //How many Steam-Apps?
             Random Rnd = new Random();
+            int random1 = Rnd.Next(appNumber);  //First game
+            int random2 = Rnd.Next(appNumber);  //Second game
 
             //Writes a new tweet
             Auth.SetUserCredentials("CONSUMER_KEY", "CONSUMER_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
-            Tweet.PublishTweet(generateRandomGame(outObject.applist.apps, Rnd) + " ist halt kein " + generateRandomGame(outObject.applist.apps, Rnd) + ".");
-        }
-
-        
-        private static string generateRandomGame(List<App> apps, Random Rnd)
-        {
-            int appNumber = apps.Count;   //How many Steam-Apps?
-            int random = Rnd.Next(appNumber);  //Generate random number
-
-            String app = "";
-            Regex r = new Regex("demo|dlc|soundtrack");
-
-            do
-            {
-                app = apps[random].name;
-            }
-            while (r.IsMatch(app.ToLower()));
-
-            return apps[random].name;
+            Tweet.PublishTweet(outObject.applist.apps[random1].name + " ist halt kein " + outObject.applist.apps[random2].name + ".");
         }
     }
 
