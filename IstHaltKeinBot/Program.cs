@@ -42,18 +42,17 @@ namespace IstHaltKeinBot
         private static string generateRandomGame(List<App> apps, Random Rnd)
         {
             int appNumber = apps.Count;   //How many Steam-Apps?
-            int random = Rnd.Next(appNumber);  //Generate random number
 
             String app = "";
             Regex r = new Regex("demo|dlc|soundtrack");
 
             do
             {
-                app = apps[random].name;
+                app = apps[Rnd.Next(appNumber)].name;
             }
             while (r.IsMatch(app.ToLower()));
 
-            return apps[random].name;
+            return app;
         }
     }
 
